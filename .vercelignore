@@ -1,0 +1,4 @@
+# Vercel
+.vercel
+dist
+node_modules
