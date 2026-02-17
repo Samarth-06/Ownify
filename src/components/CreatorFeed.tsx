@@ -48,10 +48,14 @@ export default function CreatorFeed() {
               className="glass-panel group overflow-hidden cursor-pointer"
             >
               {/* Artwork preview */}
-              <div className={`relative aspect-[4/3] bg-gradient-to-br ${post.gradient} opacity-50 group-hover:opacity-70 transition-opacity duration-500`}>
-                <div className="absolute inset-0 flex items-center justify-center text-4xl opacity-30 group-hover:opacity-60 transition-opacity">
-                  {post.avatar}
-                </div>
+              <div className={`relative aspect-[4/3] overflow-hidden`}>
+                <img
+                  src={`https://picsum.photos/seed/${post.handle}/600/450`}
+                  alt={post.title}
+                  className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity duration-500"
+                  loading="lazy"
+                />
+                <div className={`absolute inset-0 bg-gradient-to-br ${post.gradient} opacity-25 mix-blend-overlay`} />
                 {/* Timestamp badge */}
                 <div className="absolute top-3 right-3 flex items-center gap-1 glass-panel px-2 py-1 text-[10px] text-muted-foreground">
                   <Clock size={10} />

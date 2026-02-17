@@ -5,14 +5,14 @@ import { Menu, X } from 'lucide-react';
 
 const navLinks = [
   { label: 'Home', to: '/' },
-  { label: 'Features', to: '/#features' },
-  { label: 'How It Works', to: '/#how-it-works' },
-  { label: 'Showcase', to: '/#showcase' },
-  { label: 'Feed', to: '/#feed' },
+  { label: 'Features', to: '/features' },
+  { label: 'How It Works', to: '/how-it-works' },
+  { label: 'Showcase', to: '/showcase' },
+  { label: 'Feed', to: '/feed' },
   { label: 'Pricing', to: '/pricing' },
   { label: 'Docs', to: '/docs' },
-  { label: 'About', to: '/#about' },
-  { label: 'Contact', to: '/#contact' },
+  { label: 'About', to: '/about' },
+  { label: 'Contact', to: '/contact' },
 ];
 
 export default function Navbar() {
@@ -48,8 +48,8 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop links */}
-        <div className="hidden lg:flex items-center gap-1">
+        {/* Desktop links - centered */}
+        <div className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => {
             const isActive = location.pathname === link.to || (link.to !== '/' && location.pathname.startsWith(link.to.split('#')[0]) && link.to.split('#')[0] !== '/');
             return (

@@ -15,9 +15,9 @@ const Index = () => {
       <GlowCursor />
       <Navbar />
       <HeroSection />
-      <section id="features"><FeaturesSection /></section>
-      <section id="how-it-works"><HowItWorksSection /></section>
-      <section id="showcase"><CreatorShowcase /></section>
+      <FeaturesSection />
+      <HowItWorksSection />
+      <CreatorShowcase />
       <CreatorFeed />
       <FooterSection />
     </div>
