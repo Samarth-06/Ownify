@@ -89,17 +89,14 @@ export default function CreatorShowcase() {
               <div
                 className="glass-panel relative aspect-[4/5] overflow-hidden"
               >
-                {/* Art gradient placeholder */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${art.color} opacity-40 transition-opacity duration-500 group-hover:opacity-70`}
+                {/* Art placeholder image */}
+                <img
+                  src={`https://picsum.photos/seed/${art.title.replace(/\s/g, '')}/400/500`}
+                  alt={art.title}
+                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-85 transition-opacity duration-500"
+                  loading="lazy"
                 />
-                {/* Abstract pattern */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div
-                    className="h-24 w-24 rounded-full animate-morph opacity-30 group-hover:opacity-60 transition-opacity duration-500"
-                    style={{ background: art.bgColor }}
-                  />
-                </div>
+                <div className={`absolute inset-0 bg-gradient-to-br ${art.color} opacity-20 mix-blend-overlay`} />
 
                 {/* Info overlay */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/90 to-transparent p-4">

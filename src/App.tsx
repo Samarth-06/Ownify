@@ -12,6 +12,12 @@ import UploadWork from "./pages/UploadWork";
 import Portfolio from "./pages/Portfolio";
 import Pricing from "./pages/Pricing";
 import Docs from "./pages/Docs";
+import Features from "./pages/Features";
+import HowItWorks from "./pages/HowItWorks";
+import Showcase from "./pages/Showcase";
+import Feed from "./pages/Feed";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import BackgroundParticles from "./components/BackgroundParticles";
@@ -21,7 +27,6 @@ const queryClient = new QueryClient();
 
 function AnimatedRoutes() {
   const location = useLocation();
-  // Index has its own Navbar, others share the global one
   const showGlobalNav = location.pathname !== '/';
 
   return (
@@ -46,6 +51,12 @@ function AnimatedRoutes() {
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/docs" element={<Docs />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route path="/showcase" element={<Showcase />} />
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </motion.div>

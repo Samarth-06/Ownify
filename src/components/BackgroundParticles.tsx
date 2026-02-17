@@ -21,14 +21,14 @@ export default function BackgroundParticles() {
     resize();
     window.addEventListener('resize', resize);
 
-    const stars: Star[] = Array.from({ length: 120 }, () => ({
+    const stars: Star[] = Array.from({ length: 300 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.15,
-      vy: (Math.random() - 0.5) * 0.15,
-      size: Math.random() * 2 + 0.5,
-      opacity: Math.random() * 0.6 + 0.2,
-      hue: Math.random() > 0.5 ? 220 : (Math.random() > 0.5 ? 263 : 187),
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      size: Math.random() * 2.5 + 0.3,
+      opacity: Math.random() * 0.8 + 0.2,
+      hue: Math.random() > 0.7 ? 0 : (Math.random() > 0.5 ? 187 : 263),
     }));
 
     const shootingStars: ShootingStar[] = [];
@@ -44,16 +44,24 @@ export default function BackgroundParticles() {
         if (s.x > canvas.width) s.x = 0;
         if (s.y < 0) s.y = canvas.height;
         if (s.y > canvas.height) s.y = 0;
-        const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.001 + s.x);
+        const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.002 + s.x + s.y);
+        const twinkle = 0.6 + 0.4 * Math.sin(Date.now() * 0.005 + s.x * 3);
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${s.hue}, 80%, 65%, ${s.opacity * pulse})`;
+        ctx.arc(s.x, s.y, s.size * twinkle, 0, Math.PI * 2);
+        const isWhite = s.hue === 0;
+        const color = isWhite
+          ? `rgba(255, 255, 255, ${s.opacity * pulse})`
+          : `hsla(${s.hue}, 100%, 75%, ${s.opacity * pulse})`;
+        ctx.fillStyle = color;
+        ctx.shadowBlur = isWhite ? 6 : 12;
+        ctx.shadowColor = isWhite ? 'rgba(255,255,255,0.5)' : `hsla(${s.hue}, 100%, 70%, 0.6)`;
         ctx.fill();
+        ctx.shadowBlur = 0;
       }
 
       // Shooting stars
       shootTimer++;
-      if (shootTimer > 90 && Math.random() < 0.03) {
+      if (shootTimer > 30 && Math.random() < 0.08) {
         shootTimer = 0;
         const angle = Math.PI / 4 + Math.random() * 0.5;
         shootingStars.push({
@@ -71,8 +79,8 @@ export default function BackgroundParticles() {
         ss.x += ss.vx; ss.y += ss.vy; ss.life++;
         const alpha = 1 - ss.life / ss.maxLife;
         const grad = ctx.createLinearGradient(ss.x, ss.y, ss.x - ss.vx * 8, ss.y - ss.vy * 8);
-        grad.addColorStop(0, `hsla(200, 90%, 75%, ${alpha})`);
-        grad.addColorStop(1, `hsla(200, 90%, 75%, 0)`);
+        grad.addColorStop(0, `hsla(187, 100%, 80%, ${alpha})`);
+        grad.addColorStop(1, `hsla(260, 100%, 70%, 0)`);
         ctx.beginPath();
         ctx.moveTo(ss.x, ss.y);
         ctx.lineTo(ss.x - ss.vx * 8, ss.y - ss.vy * 8);

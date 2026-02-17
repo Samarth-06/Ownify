@@ -8,6 +8,7 @@ const title3 = 'COPIES THEM';
 
 function InteractiveText({ text, className, delay = 0 }: { text: string; className?: string; delay?: number }) {
   const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -15,6 +16,7 @@ function InteractiveText({ text, className, delay = 0 }: { text: string; classNa
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       setMouseX((e.clientX - rect.left) / rect.width);
+      setMouseY((e.clientY - rect.top) / rect.height);
     };
     window.addEventListener('mousemove', handler);
     return () => window.removeEventListener('mousemove', handler);
@@ -25,17 +27,29 @@ function InteractiveText({ text, className, delay = 0 }: { text: string; classNa
       {text.split('').map((char, i) => {
         const charPos = i / text.length;
         const dist = Math.abs(mouseX - charPos);
-        const glow = Math.max(0, 1 - dist * 3);
+        const glow = Math.max(0, 1 - dist * 2.5);
+        const vertDist = Math.abs(mouseY - 0.5);
+        const vertGlow = Math.max(0, 1 - vertDist * 2);
+        const combinedGlow = glow * vertGlow;
         return (
           <motion.span
             key={i}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: delay + i * 0.02 }}
+            initial={{ opacity: 0, y: 50, rotateX: -90, scale: 0.5 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+            transition={{ 
+              duration: 0.7, 
+              delay: delay + i * 0.03,
+              type: 'spring',
+              stiffness: 120,
+              damping: 12
+            }}
             style={{
-              textShadow: glow > 0.1 ? `0 0 ${20 + glow * 30}px hsl(var(--neon-cyan) / ${glow * 0.7}), 0 0 ${40 + glow * 40}px hsl(var(--neon-purple) / ${glow * 0.3})` : undefined,
-              transform: glow > 0.1 ? `translateY(${-glow * 3}px)` : undefined,
-              transition: 'text-shadow 0.15s ease, transform 0.15s ease',
+              textShadow: combinedGlow > 0.05
+                ? `0 0 ${15 + combinedGlow * 40}px hsl(var(--neon-cyan) / ${combinedGlow * 0.9}), 0 0 ${30 + combinedGlow * 60}px hsl(var(--neon-purple) / ${combinedGlow * 0.5}), 0 0 ${60 + combinedGlow * 80}px hsl(var(--neon-pink) / ${combinedGlow * 0.2})`
+                : `0 0 8px hsl(var(--neon-cyan) / 0.15)`,
+              transform: combinedGlow > 0.05 ? `translateY(${-combinedGlow * 6}px) scale(${1 + combinedGlow * 0.15})` : undefined,
+              transition: 'text-shadow 0.12s ease, transform 0.12s ease',
+              display: 'inline-block',
             }}
             className={char === ' ' ? 'w-[0.3em]' : ''}
           >
