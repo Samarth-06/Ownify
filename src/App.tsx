@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "./contexts/AuthContext";
+import { Web3Provider } from "./contexts/Web3Context";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -73,7 +74,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <AnimatedRoutes />
+          <Web3Provider>
+            <AnimatedRoutes />
+          </Web3Provider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

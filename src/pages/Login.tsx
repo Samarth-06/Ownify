@@ -6,15 +6,25 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isLoading, error } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [localError, setLocalError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && password) {
-      login(email, password);
+    setLocalError('');
+
+    if (!email || !password) {
+      setLocalError('Email and password are required');
+      return;
+    }
+
+    try {
+      await login(email, password);
       navigate('/dashboard');
+    } catch (err) {
+      setLocalError(error || 'Login failed. Please try again.');
     }
   };
 
@@ -36,28 +46,39 @@ export default function Login() {
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {(localError || error) && (
+            <div className="rounded-lg bg-red-500/20 border border-red-500/50 p-3 text-sm text-red-400">
+              {localError || error}
+            </div>
+          )}
           <div className="relative">
             <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input 
-              type="email" 
-              placeholder="Email" 
+            <input
+              type="email"
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-border bg-secondary/30 py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-neon-cyan/50 focus:outline-none transition-colors" 
+              disabled={isLoading}
+              className="w-full rounded-xl border border-border bg-secondary/30 py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-neon-cyan/50 focus:outline-none transition-colors disabled:opacity-50"
             />
           </div>
           <div className="relative">
             <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input 
-              type="password" 
-              placeholder="Password" 
+            <input
+              type="password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-border bg-secondary/30 py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-neon-cyan/50 focus:outline-none transition-colors" 
+              disabled={isLoading}
+              className="w-full rounded-xl border border-border bg-secondary/30 py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-neon-cyan/50 focus:outline-none transition-colors disabled:opacity-50"
             />
           </div>
-          <button type="submit" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-full py-3 font-display text-sm font-semibold uppercase tracking-widest text-primary-foreground">
-            Sign In <ArrowRight size={16} />
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-full py-3 font-display text-sm font-semibold uppercase tracking-widest text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Signing In...' : 'Sign In'} {!isLoading && <ArrowRight size={16} />}
           </button>
         </form>
 

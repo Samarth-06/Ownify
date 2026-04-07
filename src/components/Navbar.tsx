@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, LogOut, Home, Upload, Briefcase, Settings, Bell } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import WalletConnect from './WalletConnect';
 
 const publicNavLinks = [
   { label: 'Home', to: '/' },
@@ -115,6 +116,9 @@ export default function Navbar() {
 
           {/* Auth buttons + mobile toggle */}
           <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden lg:block">
+              <WalletConnect />
+            </div>
             {isLoggedIn ? (
               <>
                 <button
