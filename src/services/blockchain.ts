@@ -14,7 +14,46 @@ export interface CopyrightData {
 }
 
 /**
- * Register a copyright on-chain
+ * Get recommended gas prices for Polygon Amoy
+ */
+export async function getRecommendedGasPrices(provider: ethers.Provider) {
+  try {
+    const feeData = await provider.getFeeData();
+
+    // Polygon Amoy minimum gas requirements
+    const minGasTip = ethers.parseUnits('25', 'gwei'); // Minimum 25 Gwei based on error
+    const minMaxFee = ethers.parseUnits('40', 'gwei'); // Safe maximum
+
+    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas
+      ? feeData.maxPriorityFeePerGas < minGasTip
+        ? minGasTip
+        : feeData.maxPriorityFeePerGas
+      : minGasTip;
+
+    const maxFeePerGas = feeData.maxFeePerGas
+      ? feeData.maxFeePerGas < minMaxFee
+        ? minMaxFee
+        : feeData.maxFeePerGas
+      : minMaxFee;
+
+    return {
+      maxPriorityFeePerGas,
+      maxFeePerGas,
+      gasLimit: ethers.parseUnits('380000', 'wei'),
+    };
+  } catch (error) {
+    console.error('Failed to get gas prices:', error);
+    // Return safe defaults
+    return {
+      maxPriorityFeePerGas: ethers.parseUnits('30', 'gwei'),
+      maxFeePerGas: ethers.parseUnits('50', 'gwei'),
+      gasLimit: ethers.parseUnits('380000', 'wei'),
+    };
+  }
+}
+
+/**
+ * Register a copyright on-chain with proper gas settings
  */
 export async function registerCopyrightOnChain(
   contract: ethers.Contract,
@@ -29,12 +68,35 @@ export async function registerCopyrightOnChain(
   try {
     toast.loading('Registering copyright on blockchain...');
 
+    // Get the signer to access provider for gas price
+    const signer = await contract.runner?.getAddress ? contract.runner : null;
+    if (!signer) {
+      throw new Error('Signer not available');
+    }
+
+    // Get recommended gas prices
+    const gasConfig = await getRecommendedGasPrices(provider);
+    const maxPriorityFeePerGas = gasConfig.maxPriorityFeePerGas;
+    const maxFeePerGas = gasConfig.maxFeePerGas;
+    const gasLimit = gasConfig.gasLimit;
+
+    console.log('📊 Gas settings:', {
+      maxPriorityFeePerGas: ethers.formatUnits(maxPriorityFeePerGas, 'gwei'),
+      maxFeePerGas: ethers.formatUnits(maxFeePerGas, 'gwei'),
+    });
+
+    // Send transaction with explicit gas settings
     const tx = await contract.registerCopyright(
       data.title,
       data.description,
       data.fileHash,
       data.ipfsHash,
-      data.licenseType
+      data.licenseType,
+      {
+        maxPriorityFeePerGas,
+        maxFeePerGas,
+        gasLimit,
+      }
     );
 
     toast.loading(`Waiting for confirmation (TX: ${tx.hash.slice(0, 6)}...)...`);
@@ -57,8 +119,17 @@ export async function registerCopyrightOnChain(
     };
   } catch (error: any) {
     toast.dismiss();
-    const errorMessage = error?.reason || error?.message || 'Registration failed';
+
+    // Parse error message for gas-related issues
+    let errorMessage = error?.reason || error?.message || 'Registration failed';
+
+    if (errorMessage.includes('gas')) {
+      errorMessage = 'Gas price too low. Please try again - network will use automatic gas estimation.';
+      toast.info('💡 Tip: Increase MetaMask gas settings if this persists');
+    }
+
     toast.error(`Registration failed: ${errorMessage}`);
+    console.error('Full error:', error);
     throw error;
   }
 }
